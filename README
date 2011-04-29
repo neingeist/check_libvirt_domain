@@ -1,0 +1,9 @@
+Usage: ./check_libvirt_domain <domain>
+
+Check if the libvirt domain <domain> is active, i.e. running.
+For use as a Nagios plugin.
+
+define command {
+  command_name    check_by_ssh_libvirt_domain
+  command_line    $USER1$/check_by_ssh -t 30 -H $HOSTADDRESS$ -C 'sudo $USER1$/check_libvirt_domain "$ARG1$"'
+}
