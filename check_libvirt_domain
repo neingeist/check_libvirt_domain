@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+import libvirt
+import sys
+
+if len(sys.argv) != 2:
+  print "Usage: %s <domain>" % sys.argv[0]
+  print
+  print "Check if the libvirt domain <domain> is active, i.e. running."
+  print "For use as a Nagios plugin."
+  sys.exit(1)
+
+dom_name = sys.argv[1]
+
+conn = libvirt.openReadOnly(None)
+if conn == None:
+  print 'CRITICAL: Failed to open connection to the hypervisor'
+  sys.exit(2)
+
+try:
+  dom = conn.lookupByName(dom_name)
+except:
+  print "CRITICAL: Failed to find the domain %s" % dom_name
+  sys.exit(2)
+
+if dom.isActive():
+  print "OK: Domain %s: id %d running %s" % (dom_name, dom.ID(), dom.OSType())
+  sys.exit(0)
+else:
+  print "CRITICAL: Domain %s: id %d running %s is NOT ACTIVE" % (dom_name, dom.ID(), dom.OSType())
+  sys.exit(2)
+
